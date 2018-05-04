@@ -71,6 +71,8 @@ public class ThunderHelperMain {
 	 */
 	private static final String PARAM_BRIGHTNESS_THRESHOLD = "--brightness-threshold=";
 
+	private static final String PARAM_PRESS_TIMEOUT = "--press-timeout=";
+
 	/**
 	 * <p>
 	 * Use <code>"--key=[key]"</code> to change the key pressed
@@ -93,6 +95,7 @@ public class ThunderHelperMain {
 	private static final int DEFAULT_SLEEP_TIME_AFTER_HIT = 3000;
 	private static final int DEFAULT_INPUT_LAG = 100;
 	private static final int DEFAULT_MAX_HIT = 200;
+	private static final int DEFAULT_PRESS_TIMEOUT = 80;
 	private static final int DEFAULT_KEY = KeyEvent.VK_SPACE;
 	private static final double DEFAULT_BRIGTNESS_THRESHOLD = 160.0;
 
@@ -113,6 +116,7 @@ public class ThunderHelperMain {
 		final int paramBrightnessThreshold = getCommandParam(args, PARAM_BRIGHTNESS_THRESHOLD);
 		final int paramKey = getCommandParam(args, PARAM_KEY);
 		final int paramMaxHit = getCommandParam(args, PARAM_MAX_HIT);
+		final int paramPressTimeout = getCommandParam(args, PARAM_PRESS_TIMEOUT);
 		final int sleepTime = paramDelayBetweenCheck > 0 ? paramDelayBetweenCheck : DEFAULT_SLEEP_TIME;
 		final int sleepTimeAfterHit = paramDelayAfterHit > 0 ? paramDelayAfterHit : DEFAULT_SLEEP_TIME_AFTER_HIT;
 		final int inputLag = paramInputLag > 0 ? paramInputLag : DEFAULT_INPUT_LAG;
@@ -120,6 +124,7 @@ public class ThunderHelperMain {
 				: DEFAULT_BRIGTNESS_THRESHOLD;
 		final int key = paramKey > 0 ? KeyEvent.getExtendedKeyCodeForChar(paramKey) : DEFAULT_KEY;
 		final int maxHit = paramMaxHit > 0 ? paramMaxHit : DEFAULT_MAX_HIT;
+		final int pressTimeout = paramPressTimeout > 0 ? paramPressTimeout : DEFAULT_PRESS_TIMEOUT;
 
 		// Display summary of current instance values
 		System.out.println("----------------------------------------");
@@ -148,7 +153,7 @@ public class ThunderHelperMain {
 				hitCount++;
 				System.out.println("THUNDER ! (" + DF.format(brightness) + ") \t hit counter=" + hitCount);
 				System.out.print("Press " + KeyEvent.getKeyText(key) + " ... ");
-				pressKey(key, inputLag);
+				pressKey(key, inputLag, pressTimeout);
 				System.out.print("Sleep...");
 				sleep(sleepTimeAfterHit);
 				System.out.println("Wake Up!");
@@ -195,11 +200,13 @@ public class ThunderHelperMain {
 	 *            the key to press
 	 * @param inputLag
 	 *            how long to wait before pressing
+	 * @param pressTimeout
 	 */
-	private static final void pressKey(int key, int inputLag) {
+	private static final void pressKey(int key, int inputLag, int pressTimeout) {
 
 		sleep(inputLag);
 		ROBOT.keyPress(key);
+		sleep(pressTimeout);
 		ROBOT.keyRelease(key); // The key must be released after it has been pressed
 	}
 
